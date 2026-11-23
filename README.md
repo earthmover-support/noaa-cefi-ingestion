@@ -46,6 +46,8 @@ layout (`time` = init, `member`, integer `step` plus a 2-D `valid_time`); each r
 | `ingest/ingest_<region>_<product>.py` | one script per product |
 | `ingest/fix_nwa_hindcast_daily_statics.py` | replaces a wrong land/sea mask in one repo |
 | `ingest/scan_packing_attrs.py`, `static_scan.py`, `repo_packing_scan.py` | check for CF `scale_factor`/`add_offset` (none found) |
+| `RESTRUCTURING.md` | how to rename, move, re-coordinate and combine the repos, and change their descriptions |
+| `utilities.py`, `test_utilities.py` | the functions `RESTRUCTURING.md` uses, and their tests |
 
 ## Running the scripts
 
