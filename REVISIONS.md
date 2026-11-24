@@ -33,9 +33,9 @@ Findings while building:
 Kelly's proposal. Today the temporal grid (daily/monthly/yearly) is split at the repo level while the spatial grid is at the
 group level; she wants both at the group level and the repo to be the simulation.
 
-- [ ] A1. Move the temporal grouping (daily / monthly / yearly) from the repo level into groups, so one repo holds a
+- [x] A1. Move the temporal grouping (daily / monthly / yearly) from the repo level into groups, so one repo holds a
       whole simulation (model domain + experiment; 11 repos become 7, see Decisions).
-- [ ] A2. Put the spatial grouping above the temporal one (users mostly stay in one spatial grid and move across
+- [x] A2. Put the spatial grouping above the temporal one (users mostly stay in one spatial grid and move across
       temporal archives). Decided: all cell-position grids (h / q / u / v: the yh xh, yq xq, jh iq, yT xB ... dims) share
       ONE group per side, as xGCM does, so no h/q/u/v subgroups. Target layout:
 
@@ -49,13 +49,13 @@ group level; she wants both at the group level and the repo to be the simulation
 
       (Kelly's fallback with h/q/u/v subgroups is not needed. Her tree omits `regrid/yearly`; decided that was an
       oversight, so `regrid` gets `yearly` too.)
-- [ ] A3. Standardize group names across all simulations, whatever coordinate naming convention (yh/xh, jh/ih, yT/xT)
+- [x] A3. Standardize group names across all simulations, whatever coordinate naming convention (yh/xh, jh/ih, yT/xT)
       each one uses. Today they differ, e.g. `main`, `u_grid`, `v_grid`, `ice`, `ice_xB`, `ice_yB`, `b_x`, `b_y`.
-- [ ] A4. Coordinate variable names stay as they are in existing simulations (explicitly not worth undoing); explain the
+- [x] A4. Coordinate variable names stay as they are in existing simulations (explicitly not worth undoing); explain the
       differences in the supporting documentation (see A6).
-- [ ] A5. Fix `geolat`/`geolon` coordinates: add the missing `geolat_u/v` and `geolon_u/v`, and mark `geolat_c`/`geolon_c`
+- [x] A5. Fix `geolat`/`geolon` coordinates: add the missing `geolat_u/v` and `geolon_u/v`, and mark `geolat_c`/`geolon_c`
       as coordinate variables. Check every group, not just the ones she noticed.
-- [ ] A6. Write supporting documentation covering the coordinate naming differences between simulations (and the final
+- [x] A6. Write supporting documentation covering the coordinate naming differences between simulations (and the final
       layout).
 
 ## B. Static variables
@@ -68,7 +68,7 @@ names, e.g. `Coriolis`, `areacello_bu/cu/cv`, `dxCu/dxCv/dxt`, `dyCu/dyCv/dyt`, 
       variables on Kelly's list are in the `ocean_static` and `ice_static` files in the AWS bucket (NEP hindcast list). So
       the gap is on our side (we did not ingest them), not missing data on NODD.
 - [x] B2. Same verification (Kevin, NOAA affiliate). Covered by B1.
-- [ ] B3. Add the full static set to every repo (see B4 for where it goes). No longer blocked on NODD for the NEP
+- [x] B3. Add the full static set to every repo (see B4 for where it goes). No longer blocked on NODD for the NEP
       statics; check the NWA and PCI static files for the same variable set before relying on it.
 - [x] B4. DECIDED: every repo carries the full static set, and within a repo each static variable is stored only once (no
       copies per daily / monthly / yearly group). Layout: a `static` group under `native` and one under `regrid`
@@ -79,22 +79,22 @@ names, e.g. `Coriolis`, `areacello_bu/cu/cv`, `dxCu/dxCv/dxt`, `dyCu/dyCv/dyt`, 
 
 ## C. Model domain names
 
-- [ ] C1. Name the repos `<domain>-<experiment>` (no `cefi-` prefix; see Decisions) and rename to the published model names: `nep` -> `nep10k`, `nwa` -> `nwa12` (no "k", intentionally),
+- [x] C1. Name the repos `<domain>-<experiment>` (no `cefi-` prefix; see Decisions) and rename to the published model names: `nep` -> `nep10k`, `nwa` -> `nwa12` (no "k", intentionally),
       `pci` -> `hic6k`. Applies to repo names, repo descriptions and tags, scripts, the notes and the README.
-- [ ] C2. Work out how to rename: the Arraylake repos may not be renameable in place, so this may mean creating new repos
+- [x] C2. Work out how to rename: the Arraylake repos may not be renameable in place, so this may mean creating new repos
       and retiring the old names. Combine with the A reorganization so repos are rebuilt once.
 
 ## D. Missing datasets
 
-- [ ] D1. NEP10k seasonal forecast. Check first whether it exists on NODD (we have only the NWA seasonal products).
-- [ ] D2. NEP10k seasonal reforecast. Same check.
+- [ ] D1. NEP10k seasonal forecast. NOT ON NODD (checked 2026-11-25: the Northeast Pacific has only the hindcast daily and monthly); nothing to ingest until NOAA publishes it.
+- [ ] D2. NEP10k seasonal reforecast. Not on NODD either (see D1).
 - [ ] D3. DEFERRED (decided): older releases are out of scope for now. We ingested only the latest release of each product.
       Revisit later; it needs a decision on how releases are represented (separate repos, branches or tags, or groups).
 
 ## E. Not an ingestion task
 
-- [ ] E1. Arraylake web app: let users set A-Z as the default sort; the main page resets to sorting by "recent" every
-      time. Kelly raises it and seconds Roland's comment. Pass to the Arraylake web team.
+- [x] E1. DONE and released (Tom, 2026-11-25). Arraylake web app: let users set A-Z as the default sort; the main page resets to sorting by "recent" every
+      time. Kelly raises it and seconds Roland's comment. 
 
 ## Decisions so far
 

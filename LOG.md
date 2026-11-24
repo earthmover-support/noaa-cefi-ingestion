@@ -186,3 +186,13 @@ afterwards. The org now contains only the seven new repos.
 
 Remaining from REVISIONS.md: documentation of the coordinate naming differences, NEP10k seasonal forecast and reforecast (if on NODD), older releases
 (deferred).
+
+### Coordinate naming documentation (2026-11-25)
+
+`COORDINATES.md` documents the dimension and coordinate names per repo (the NWA and Pacific Islands `yh`/`xh`/`yq`/`xq`, the NEP `jh`/`ih`/`jq`/`iq`,
+the sea-ice `yT`/`xT`/`xB`/`yB`/`ct`, the regridded `lat`/`lon`), the four cell positions, the static groups and the quirks (Pacific Islands `yq`
+has 539 points; `_u`/`_v` coordinates are NaN on land in the NEP; `bnds` against `nv`). It was written from the names read out of the seven repos, and its two code
+snippets were run against them (an area-weighted merge of a static field into `nwa12-hindcast`, and a rename of the NEP dimensions to the NWA names).
+
+Checked while listing NOAA's bucket for this: `NEP10k seasonal forecast` and `reforecast` are not in the bucket (nothing to ingest); the latest release of
+every other product is in the repos; older releases remain deferred. The web-app sort request (task E1) is done on NOAA's side.

@@ -45,6 +45,7 @@ the NWA and Pacific Islands, `jh`/`ih` for the NEP) and were not unified.
 | `ingest/ingest_<region>_<product>.py` | one script per product: the original ingestion that produced the first 11 repos |
 | `ingest/fix_nwa_hindcast_daily_statics.py` | replaces a wrong land/sea mask in one repo |
 | `ingest/scan_packing_attrs.py`, `static_scan.py`, `repo_packing_scan.py` | check for CF `scale_factor`/`add_offset` (none found) |
+| `COORDINATES.md` | which dimension and coordinate names each repo uses, and how to line domains up |
 | `REVISIONS.md`, `LOG.md` | NOAA's requested revisions with decisions and progress; running log of the restructuring and the code used |
 | `ingest/restructure_*.py`, `ingest/rename_repo_by_import.py`, `ingest/delete_old_repos.py` | rebuild the old repos in the new layout, rename a repo without copying data, retire the old repos |
 | `RESTRUCTURING.md` | how to rename, move, re-coordinate and combine the repos, and change their descriptions |
