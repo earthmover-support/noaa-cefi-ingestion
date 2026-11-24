@@ -67,5 +67,26 @@ Findings:
   static file: fields from the NWA decadal-forecast yearly r20250819 static (its mask matches the data), coordinates from the hindcast static.
 - Repo descriptions are limited to 255 characters (Arraylake).
 
-Next: `nwa12-decadal-forecast`, `nwa12-hindcast`, `hic6k-hindcast`, `nep10k-hindcast` (each merges a monthly and a daily or yearly repo;
-`nep10k-hindcast` carries 4.2 TB of native chunks).
+### Rebuilt: `nwa12-decadal-forecast` (2026-11-24)
+
+Merges `cefi-nwa-decadal-forecast-monthly` (r20250925) and `cefi-nwa-decadal-forecast-yearly` (r20250819). Code:
+`ingest/restructure_nwa12_decadal.py [--build] [--validate] [--promote]` (same branch / validate / promote flow as above; it reuses the
+static-file readers of the multi-decadal script). `main` snapshot `Y8CSZS53EXDM8HQDRP90`. Layout: `native/monthly`, `native/yearly`,
+`native/static`, `regrid/monthly`, `regrid/yearly`.
+
+Checks: 90 arrays compared against the two old repos (591,136 virtual references identical, 70 native chunks present with identical lengths),
+`native/static` equal to the source files, all five groups open with xarray, and sampled values (first and last init, monthly and yearly)
+identical in old and new.
+
+Findings:
+- **The monthly and yearly static files are not identical.** `deptho` is identical. `areacello` and `wet` agree on every cell valid in both,
+  but differ on land cells: 2,665 cells are valid only in the yearly file and 9,356 only in the monthly file. Both products' ocean mask
+  (`wet == 1`, `deptho > 0`, 391,722 cells at the surface) equals the data mask exactly with either static. One `native/static` serves both
+  frequencies, built from the yearly r20250819 static as in the other NWA repos; the 9,356 land-cell values that only the monthly file had are
+  therefore NaN in the new repo.
+- **Audit of the 1e20 fill problem across all repos** (`ingest/audit_native_fill.py`, read-only: natively stored float arrays containing
+  1e20). It is a bug only where `_FillValue` says NaN but the values are 1e20, which was the case in `cefi-nwa-decadal-forecast-monthly`
+  (`areacello`, `deptho`, `wet`) and the seasonal forecast and reforecast repos. `cefi-nwa-decadal-forecast-yearly` and both Pacific Islands repos
+  also hold 1e20 on land in those three arrays, but declare 1e20 as `_FillValue`, so xarray masks them correctly. The new repos have NaN everywhere; all other repos have no such arrays.
+
+Next: `nwa12-hindcast` (daily + monthly), `hic6k-hindcast` (daily + monthly), `nep10k-hindcast` (daily + monthly, 4.2 TB native).

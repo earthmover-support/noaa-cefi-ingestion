@@ -12,6 +12,7 @@ NOAA file reads; each built on a branch, checked, then promoted to `main`). The 
 | `nwa12-seasonal-forecast` | `cefi-nwa-seasonal-forecast-monthly` | done 2026-11-24 (`native/monthly`, `native/static`, `regrid/monthly`) |
 | `nwa12-seasonal-reforecast` | `cefi-nwa-seasonal-reforecast-monthly` | done 2026-11-24 |
 | `nwa12-multi-decadal-outlook` | `cefi-nwa-multi-decadal-outlook-yearly` | done 2026-11-24 (`native/yearly` merges raw/main, u_grid, v_grid) |
+| `nwa12-decadal-forecast` | `cefi-nwa-decadal-forecast-monthly` + `-yearly` | done 2026-11-24 (`native/{monthly,yearly,static}`, `regrid/{monthly,yearly}`) |
 
 Findings while building:
 - The old seasonal forecast and reforecast repos stored land as the literal `1e20` in `areacello`, `deptho` and `wet` (their `_FillValue`
