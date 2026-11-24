@@ -118,7 +118,7 @@ def write_static(session, cfg: dict, static: dict) -> None:
     for name, (dims, a, attrs) in static.items():
         attrs = {k: v for k, v in attrs.items() if k != "coordinates"}
         if len(dims) == 2:
-            attrs["coordinates"] = GRID_COORDS[dims]
+            attrs["coordinates"] = cfg.get("grid_coords", GRID_COORDS)[dims]
             if a.dtype.kind == "f":
                 attrs["_FillValue"] = NAN_FILL
         arr = g.create_array(name, shape=a.shape, dtype=a.dtype, chunks=a.shape, dimension_names=dims, attributes=attrs,

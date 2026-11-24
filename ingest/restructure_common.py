@@ -63,9 +63,9 @@ def check_moved(label: str, old: np.ndarray, new: np.ndarray) -> str:
             f"only in the static {int((s_valid & ~o_valid).sum())}; old fill cells were {fill}; all become NaN")
 
 
-def add_uv_coordinates(group, static: dict, kinds=("u", "v")) -> None:
+def add_uv_coordinates(group, static: dict, kinds=("u", "v"), u_dims=("yh", "xq"), v_dims=("yq", "xh")) -> None:
     """Add geolon_u/geolat_u (and _v) to the data group and list them in `coordinates` of the u-grid / v-grid variables
-    (dims ending in (yh, xq) / (yq, xh)), as those variables had no 2-D coordinates."""
+    (dims ending in `u_dims` / `v_dims`, default (yh, xq) / (yq, xh)), as those variables had no 2-D coordinates."""
     from zarr.codecs import BloscCodec
     for kind in kinds:
         for nm in UV_COORDS[kind]:
@@ -77,9 +77,9 @@ def add_uv_coordinates(group, static: dict, kinds=("u", "v")) -> None:
     for name, arr in group.arrays():
         d = tuple(arr.metadata.dimension_names or ())
         extra = None
-        if "u" in kinds and arr.ndim >= 3 and d[-2:] == ("yh", "xq"):
+        if "u" in kinds and arr.ndim >= 3 and d[-2:] == u_dims:
             extra = UV_COORDS["u"]
-        elif "v" in kinds and arr.ndim >= 3 and d[-2:] == ("yq", "xh"):
+        elif "v" in kinds and arr.ndim >= 3 and d[-2:] == v_dims:
             extra = UV_COORDS["v"]
         if extra:
             cur = str(arr.attrs.get("coordinates", "")).split()

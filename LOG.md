@@ -135,4 +135,38 @@ Findings:
   `excluded` metadata (six unreadable arrays) on `nwa12-hindcast`, "draft product" in the `hic6k-hindcast` description, and "2045 = NaN" in the
   `nwa12-multi-decadal-outlook` description. The build scripts now keep them.
 
-Next: `nep10k-hindcast` (NEP daily + monthly; the daily repo carries 4.2 TB of native 3-D chunks, so it needs an approach decision first).
+### Renamed and restructured in place: `nep10k-hindcast` (2026-11-24 / 25)
+
+Merges the NEP hindcast daily and monthly repos. The daily repo holds 4.2 TB of native 3-D chunks, so instead of copying them it was **renamed without
+moving any data** and restructured with Icechunk moves.
+
+- **Rename** (`ingest/rename_repo_by_import.py OLD NEW [--yes]`). Arraylake has no rename; `import_repo` refuses a storage prefix another record owns
+  (409 `prefix_overlap`). So: tag `main` as `before-rename`, delete the old record with `delete_repo(immediate=True, retain_data=True)` (bucket bytes
+  untouched), import the same bucket prefix under the new name (re-importing under the old name if that fails), verify. Tried first on a throwaway
+  repo (a test repo `zz-rename-test-a` was created and later deleted). For `cefi-nep-hindcast-daily` -> `nep10k-hindcast`: `main` snapshot
+  `G5BV7RJ50WCGG6M4J8DG` and all 25 snapshots identical after the import; a virtual and a native array read fine, including from a fresh process. The
+  old name `cefi-nep-hindcast-daily` no longer exists.
+- **Restructure** (`ingest/restructure_nep10k.py [--build] [--validate] [--promote]`), on branch `restructure`: `/raw` -> `/native/daily` and
+  `/regrid` -> `/regrid/daily` with Icechunk moves (metadata only; the regrid group goes through a temporary name because a group cannot move into
+  its own subtree); `cefi-nep-hindcast-monthly` raw/{main,u_grid,v_grid,b_x,b_y} merged into `native/monthly` and its regrid copied to
+  `regrid/monthly` (virtual references); `native/static` written. `main` snapshot `MJMVJ10V3TD4RNSFYXJ0` after `--promote`; the pre-restructure state
+  stays reachable as the tag `before-rename`.
+
+Layout: `native/daily`, `native/monthly`, `native/static`, `regrid/daily`, `regrid/monthly`.
+
+Checks: 990 arrays compared against the old layouts (193,928 virtual references identical, 394,477 native chunks present with identical lengths:
+the moves touched no chunk), `native/static` equal to the source files, all five groups open with xarray, and sampled values (daily virtual 2-D,
+daily native 3-D, daily regrid, monthly main / u / v / b_x / b_y / regrid; first and last step) identical in old and new.
+
+Findings:
+- NEP's `ocean_static.nc` has the geolon/geolat family masked on land (57,677 cells for `geolon`). The repo's `geolon`, `geolat`, `geolon_c`,
+  `geolat_c` are gap-free (from the data files) and equal the static wherever it is valid, so `native/static` uses the repo's four arrays; the
+  `_u`/`_v` coordinates have no gap-free source and are NaN on land, in `native/static` and in the data groups where the u/v variables now list them.
+- The daily and monthly `ocean_static.nc` and `ice_static.nc` files are identical (asserted). `native/static` holds all 34 ocean-static fields and
+  axes plus the ice fields `CELL_AREA`, `COSROT`, `SINROT` (on the data's `jh`, `ih` dims; the file calls them `yT`, `xT`). The ice file's
+  geolon/geolat duplicate the ocean ones and its extra axes are not copied. The NEP statics already used NaN on land, so there is no fill problem here.
+- The old NEP monthly raw subgroups merge cleanly into one group (the b-grid groups use their own `xB`, `yB` dims), so unlike the NWA hindcast there is
+  no nested ice group.
+
+All seven target repos are now built. The old repos (`cefi-nwa-*`, `cefi-pci-*`, `cefi-nep-hindcast-monthly`) still exist and are untouched; retiring
+them, and the remaining tasks of REVISIONS.md (documentation of the coordinate naming differences, NEP10k seasonal data, older releases), are next.

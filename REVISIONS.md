@@ -15,6 +15,7 @@ NOAA file reads; each built on a branch, checked, then promoted to `main`). The 
 | `nwa12-decadal-forecast` | `cefi-nwa-decadal-forecast-monthly` + `-yearly` | done 2026-11-24 (`native/{monthly,yearly,static}`, `regrid/{monthly,yearly}`) |
 | `hic6k-hindcast` | `cefi-pci-hindcast-daily` + `-monthly` | done 2026-11-24 (`native/{daily,monthly,static}`, `regrid/{daily,monthly}`) |
 | `nwa12-hindcast` | `cefi-nwa-hindcast-daily` + `-monthly` | done 2026-11-24 (`native/{daily,monthly,static}`, `regrid/{daily,monthly}`; sea ice nested in `native/monthly/ice`, `native/static/ice`, `regrid/monthly/ice`) |
+| `nep10k-hindcast` | `cefi-nep-hindcast-daily` (renamed in place, no data copied) + `cefi-nep-hindcast-monthly` | done 2026-11-25 (`native/{daily,monthly,static}`, `regrid/{daily,monthly}`) |
 
 Findings while building:
 - The old seasonal forecast and reforecast repos stored land as the literal `1e20` in `areacello`, `deptho` and `wet` (their `_FillValue`
