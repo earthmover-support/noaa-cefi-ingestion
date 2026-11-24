@@ -89,8 +89,24 @@ Nothing outstanding. (Repo granularity was settled by Tom: see Decisions.)
 
 ## Implementation notes
 
-- Reorganizing existing arrays can use Icechunk's metadata-only move (`rearrange_session`, used earlier for
-  `cefi-nwa-decadal-forecast-monthly`); merging separate repos into one is a rebuild (re-run the ingest scripts or copy
-  the references), not a move.
+Reconciled with `RESTRUCTURING.md` / `utilities.py` (commit `1a20fd8`), which supersede the earlier assumption here that merging
+repos means re-ingesting.
+
+- Most of the reorganization needs no re-ingest and no NOAA file reads: `rename_variable`, `set_coords` / `reset_coords`,
+  `move_node` (arrays and groups) and `copy_node` only rewrite Zarr metadata and chunk references. Virtual chunks stay virtual.
+- Merging repos (A1) is `copy_node` from each source repo into the new repo (e.g. `/raw` -> `/native/daily`). Virtual chunks are copied
+  as references; native chunks are copied byte for byte. The new repo starts with a fresh history.
+- The heavy case is `cefi-nep-hindcast-daily`: its ~4.2 TB of native 3-D chunks would be downloaded and re-uploaded. Options to
+  evaluate: run the copy from AWS us-east-1; or register the existing Icechunk repo under the new name with
+  `Client.import_repo(name, bucket_config_nickname, prefix)` and restructure it in place (not tested; also unknown what deleting the
+  old Arraylake record does to the underlying data).
+- Arraylake has no rename operation for repos (`modify_repo` changes description and metadata only), so a new repo name means a new
+  repo (create + copy, or import).
+- The guide uses the org name `NOAA-CEFI`; our org is `noaa-cefi`. Check whether the case matters.
+- `utilities.py` was tested on small local repos; our repos have up to ~1,000 arrays and 3.3 M chunk references (PCI monthly), so
+  check speed and memory at that scale.
+- Merging the `main` / `u_grid` / `v_grid` / `ice*` / `b_*` subgroups of a repo into one group per side (A2) is not covered by the
+  guide: it needs a name-collision check first (e.g. `time`, `z_l` must be identical across subgroups; `geolon`/`geolat` exist
+  on more than one grid).
 - Keep the current repos until the new layout is validated, then retire them.
 - The native NEP 3-D copy is in `cefi-nep-hindcast-daily`; it moves along with the rest of that repo.
