@@ -1,6 +1,28 @@
 # Revisions requested by NOAA after the initial ingestion
 
-Source: NOAA review notes (task tracker + Kelly's comments), received 2026-11-24. Nothing here is started.
+Source: NOAA review notes (task tracker + Kelly's comments), received 2026-11-24.
+
+## Progress
+
+Built with `ingest/restructure_nwa12_seasonal.py` and `ingest/restructure_nwa12_multidecadal.py` (copy references with `utilities.copy_node`, no
+NOAA file reads; each built on a branch, checked, then promoted to `main`). The old repos are untouched.
+
+| New repo | Replaces | State |
+|---|---|---|
+| `nwa12-seasonal-forecast` | `cefi-nwa-seasonal-forecast-monthly` | done 2026-11-24 (`native/monthly`, `native/static`, `regrid/monthly`) |
+| `nwa12-seasonal-reforecast` | `cefi-nwa-seasonal-reforecast-monthly` | done 2026-11-24 |
+| `nwa12-multi-decadal-outlook` | `cefi-nwa-multi-decadal-outlook-yearly` | done 2026-11-24 (`native/yearly` merges raw/main, u_grid, v_grid) |
+
+Findings while building:
+- The old seasonal forecast and reforecast repos stored land as the literal `1e20` in `areacello`, `deptho` and `wet` (their `_FillValue`
+  said NaN, so xarray returned 1e20 as data). The new `native/static` has NaN. The multi-decadal repo already had NaN.
+- Nothing is regridded in NOAA's static files, so there is no `regrid/static`; the regridded 1-D lat/lon are in `regrid/<freq>`.
+- `geolon`/`geolat` (and `_u`/`_v` when the group has u/v variables) are kept in the data group too, because the data variables name them in
+  `coordinates`; the full set is in `native/static`. The u-grid and v-grid variables of the multi-decadal repo now list `geolon_u`/`geolat_u`
+  and `geolon_v`/`geolat_v` as coordinates (they had none).
+- The merged coordinates in `nwa12-multi-decadal-outlook` now carry the fuller attributes (the raw/main copies of `xh`, `yh`, `xq`, `yq` had no
+  `units`/`long_name`/`axis`).
+
 
 ## A. Reorganize groups and datasets (tracker: Tom Nicholas, "Reformat arrays/groups")
 
