@@ -5,7 +5,7 @@ Source: NOAA review notes (task tracker + Kelly's comments), received 2026-11-24
 ## Progress
 
 Built with `ingest/restructure_nwa12_seasonal.py` and `ingest/restructure_nwa12_multidecadal.py` (copy references with `utilities.copy_node`, no
-NOAA file reads; each built on a branch, checked, then promoted to `main`). The old repos are untouched.
+NOAA file reads; each built on a branch, checked, then promoted to `main`). The old repos were deleted on 2026-11-25 (see `LOG.md`).
 
 | New repo | Replaces | State |
 |---|---|---|

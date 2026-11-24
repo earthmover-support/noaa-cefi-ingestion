@@ -168,5 +168,21 @@ Findings:
 - The old NEP monthly raw subgroups merge cleanly into one group (the b-grid groups use their own `xB`, `yB` dims), so unlike the NWA hindcast there is
   no nested ice group.
 
-All seven target repos are now built. The old repos (`cefi-nwa-*`, `cefi-pci-*`, `cefi-nep-hindcast-monthly`) still exist and are untouched; retiring
-them, and the remaining tasks of REVISIONS.md (documentation of the coordinate naming differences, NEP10k seasonal data, older releases), are next.
+All seven target repos are now built.
+
+### Old repos deleted (2026-11-25)
+
+The ten old repos (`cefi-nep-hindcast-monthly`, `cefi-nwa-decadal-forecast-monthly` and `-yearly`, `cefi-nwa-hindcast-daily` and `-monthly`,
+`cefi-nwa-multi-decadal-outlook-yearly`, `cefi-nwa-seasonal-forecast-monthly` and `-reforecast-monthly`, `cefi-pci-hindcast-daily` and `-monthly`)
+were deleted from Arraylake together with their Icechunk storage, on request, with `ingest/delete_old_repos.py` (default mode: Arraylake's recoverable
+state for the 7-day grace period, then the cleanup job reclaims the bytes under each repo's own `arraylake/<id>_<name>/` prefix). The old
+`cefi-nep-hindcast-daily` was not on the list: its storage is `nep10k-hindcast`.
+
+Guards, checked before deleting: every target's storage prefix is under `arraylake/` and overlaps none of the new repos; no virtual reference of 40
+sampled arrays per new repo points under `arraylake/` (they point at the NetCDF files, so the new repos do not depend on the old storage); each new repo
+opens and reads. **NOAA's NetCDF files were not touched**: object counts and bytes under `northwest_atlantic/` (14,045 objects, 10.09 TB),
+`northeast_pacific/` (11,078, 23.32 TB) and `pacific_islands/` (1,583, 3.54 TB) are identical before and after, and all seven new repos still read
+afterwards. The org now contains only the seven new repos.
+
+Remaining from REVISIONS.md: documentation of the coordinate naming differences, NEP10k seasonal forecast and reforecast (if on NODD), older releases
+(deferred).
