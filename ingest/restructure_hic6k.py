@@ -39,7 +39,7 @@ SOURCES = {"daily": "cefi-pci-hindcast-daily", "monthly": "cefi-pci-hindcast-mon
 STATIC_PATHS = {f: f"pacific_islands/full_domain/hindcast/{f}/raw/r20260427/ocean_static.nc" for f in SOURCES}
 SUBGROUPS = ["main", "u_grid", "v_grid"]
 MOVED_TO_STATIC = ("areacello", "deptho", "wet", "geolon_c", "geolat_c")
-DESC = ("NOAA CEFI MOM6 Pacific Islands (hic6k) hindcast, daily and monthly, r20260427. Groups: native/{daily,monthly,static}, "
+DESC = ("NOAA CEFI MOM6 Pacific Islands (hic6k) hindcast, daily and monthly, r20260427 (draft product). Groups: native/{daily,monthly,static}, "
         "regrid/{daily,monthly}. Virtual references to the NOAA NetCDF files.")
 STATIC_SOURCE = f"{STATIC_PATHS['monthly']} (all fields; identical to the daily release's static)"
 Q, U, V = ({"geolon_c", "geolat_c", "wet_c", "areacello_bu", "Coriolis"},

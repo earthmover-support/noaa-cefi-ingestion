@@ -38,7 +38,7 @@ ORG, BRANCH = base.ORG, base.BRANCH
 OLD, NEW = "cefi-nwa-multi-decadal-outlook-yearly", "nwa12-multi-decadal-outlook"
 DECADAL_STATIC = "northwest_atlantic/full_domain/decadal_forecast/yearly/raw/r20250819/ocean_static.nc"
 DESC = ("NOAA CEFI MOM6 NW Atlantic (nwa12) multi-decadal outlook, yearly, r20260331: SSP126/245/370/585 on a `scenario` axis. "
-        "Groups: native/yearly, native/static, regrid/yearly. Virtual references; T_adx SSP585 native.")
+        "Groups: native/yearly, native/static, regrid/yearly. Virtual references; T_adx SSP585 native (2045 = NaN).")
 SUBGROUPS = ("main", "u_grid", "v_grid")
 MOVED_TO_STATIC = ("areacello", "deptho", "wet", "geolon_c", "geolat_c")
 STATIC_SOURCE = (f"{DECADAL_STATIC} (all fields; its land/sea mask matches this release's data), geolon/geolat family from the NWA hindcast "

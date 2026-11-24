@@ -109,4 +109,30 @@ Findings:
 - The old repos' `areacello`/`deptho`/`wet` held 1e20 on land but declared 1e20 as `_FillValue` (so xarray masked them); the new ones use NaN
   like the other repos. `write_static` now adds the NaN `_FillValue` attribute to float arrays only.
 
-Next: `nwa12-hindcast` (daily + monthly) needs a decision on the sea-ice grids first (see REVISIONS.md); then `nep10k-hindcast` (4.2 TB native).
+### Rebuilt: `nwa12-hindcast` (2026-11-24)
+
+Merges `cefi-nwa-hindcast-daily` and `cefi-nwa-hindcast-monthly` (both r20250715). Code: `ingest/restructure_nwa12_hindcast.py [--build]
+[--validate] [--promote]` (uses `restructure_common.py`). `main` snapshot `TVY3W9D7C82X21VWGK7G`.
+
+Layout (decision of 2026-11-24: sea ice in a nested group, no renames): `native/daily`; `native/monthly` (raw main + u_grid + v_grid merged);
+`native/monthly/ice` (raw ice + ice_xB + ice_yB merged); `native/static` and `native/static/ice`; `regrid/daily`; `regrid/monthly` and
+`regrid/monthly/ice`. The ice variables stay a separate dataset because they sit on their own grids (yT/xT, xB, yB) and the regridded ice has its own
+`lon` axis (different values from the ocean `lon`), so folding them in would have needed renames.
+
+Checks: 1,014 arrays compared against the two old repos (182,705 virtual references identical, 133 native chunks present with identical lengths),
+both static groups equal to their source files, all eight data groups open with xarray, and sampled values for the daily ocean and regrid variables
+and for monthly ocean, u, v, ice, ice_xB, ice_yB, regrid and regrid-ice variables (first and last step) identical in old and new.
+
+Findings:
+- The repo has about a thousand arrays because the source is one NetCDF file per variable and NOAA publishes ~450 monthly ocean variables, ~40 sea-ice
+  variables and the same again regridded; each is one array (not something the restructuring added).
+- The old NWA hindcast repos already had NaN (not 1e20) on land in `areacello`/`deptho`/`wet` and in the ice `CELL_AREA`, and they equal the sources on
+  every valid cell. `native/static` is built from the decadal-yearly r20250819 static (mask matches the data) with the hindcast-monthly coordinates,
+  as decided on 2026-10-26.
+- `native/static/ice` holds the five fields of `ice_static.nc` (`CELL_AREA`, `COSROT`, `SINROT`, `GEOLON`, `GEOLAT`; fill -1e34 as NaN, land
+  masked at the same 228,416 cells) and its four axes (`xT`, `yT`, `xTe`, `yTe`).
+- Slip corrected: the first versions of the build scripts dropped repo metadata and description caveats of the old repos. Restored afterwards: the
+  `excluded` metadata (six unreadable arrays) on `nwa12-hindcast`, "draft product" in the `hic6k-hindcast` description, and "2045 = NaN" in the
+  `nwa12-multi-decadal-outlook` description. The build scripts now keep them.
+
+Next: `nep10k-hindcast` (NEP daily + monthly; the daily repo carries 4.2 TB of native 3-D chunks, so it needs an approach decision first).
