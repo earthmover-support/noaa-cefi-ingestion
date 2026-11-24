@@ -89,4 +89,24 @@ Findings:
   (`areacello`, `deptho`, `wet`) and the seasonal forecast and reforecast repos. `cefi-nwa-decadal-forecast-yearly` and both Pacific Islands repos
   also hold 1e20 on land in those three arrays, but declare 1e20 as `_FillValue`, so xarray masks them correctly. The new repos have NaN everywhere; all other repos have no such arrays.
 
-Next: `nwa12-hindcast` (daily + monthly), `hic6k-hindcast` (daily + monthly), `nep10k-hindcast` (daily + monthly, 4.2 TB native).
+### Rebuilt: `hic6k-hindcast` (2026-11-24)
+
+Merges `cefi-pci-hindcast-daily` and `cefi-pci-hindcast-monthly` (both r20260427). Code: `ingest/restructure_hic6k.py [--build] [--validate]
+[--promote]`, with the subgroup merge and static helpers in `ingest/restructure_common.py` (`merge_subgroups`, `check_moved`,
+`add_uv_coordinates`). `main` snapshot `3ZT9VVNNWG7071NVCK80`. Layout: `native/daily`, `native/monthly`, `native/static`, `regrid/daily`,
+`regrid/monthly`.
+
+Checks: 821 arrays compared against the two old repos (3,834,432 virtual references identical, 33 native chunks present with identical
+lengths), `native/static` equal to the source file, all seven groups open with xarray, and sampled values for a tracer, a u-grid and a v-grid
+variable (first and last step, daily and monthly) identical in old and new.
+
+Findings:
+- The Pacific Islands `ocean_static.nc` files of the daily and monthly releases are identical (asserted), so one `native/static` serves both.
+  Its 1-D axes: `yq` has 539 points and `xq` 726 (the q grid has no extra row here), so the (539, 726) shape is shared by the q-grid
+  (`yq`, `xq`) and u-grid (`yh`, `xq`) fields; the build assigns dimensions by field name, not by shape.
+- The static file also has three int8 masks (`mask`, `mask_u`, `mask_v`) and a length-1 `time` axis; the masks are kept, `time` is not a
+  static field and is left out.
+- The old repos' `areacello`/`deptho`/`wet` held 1e20 on land but declared 1e20 as `_FillValue` (so xarray masked them); the new ones use NaN
+  like the other repos. `write_static` now adds the NaN `_FillValue` attribute to float arrays only.
+
+Next: `nwa12-hindcast` (daily + monthly) needs a decision on the sea-ice grids first (see REVISIONS.md); then `nep10k-hindcast` (4.2 TB native).

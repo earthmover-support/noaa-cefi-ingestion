@@ -119,7 +119,8 @@ def write_static(session, cfg: dict, static: dict) -> None:
         attrs = {k: v for k, v in attrs.items() if k != "coordinates"}
         if len(dims) == 2:
             attrs["coordinates"] = GRID_COORDS[dims]
-            attrs["_FillValue"] = NAN_FILL
+            if a.dtype.kind == "f":
+                attrs["_FillValue"] = NAN_FILL
         arr = g.create_array(name, shape=a.shape, dtype=a.dtype, chunks=a.shape, dimension_names=dims, attributes=attrs,
                              compressors=BloscCodec(cname="zstd", clevel=3, shuffle="shuffle"),
                              fill_value=float("nan") if a.dtype.kind == "f" else 0)
