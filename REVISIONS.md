@@ -82,6 +82,9 @@ names, e.g. `Coriolis`, `areacello_bu/cu/cv`, `dxCu/dxCv/dxt`, `dyCu/dyCv/dyt`, 
   `nwa12-decadal-forecast`, `nwa12-seasonal-forecast`, `nwa12-seasonal-reforecast`, `nwa12-multi-decadal-outlook`,
   `hic6k-hindcast`, `nep10k-hindcast` (C1).
 - Statics: all of them in every repo, stored once per repo in `native/static` and `regrid/static` (B4).
+  DataTree inheritance of the statics by `daily` / `monthly` / `yearly` is NOT required (Tom, 2026-11-24). What matters: the
+  static data is in the repo, and the group structure makes clear which datasets it applies to. So keep `native/static` and
+  `regrid/static` as sibling groups, and give each a group attribute naming the groups it applies to.
 
 ## Still open
 
